@@ -41,10 +41,10 @@ python -m pip install -r requirements.txt
 .\scripts\run_assignment.ps1 -InputFile healthdataset/Health-Tweets/bbchealth.txt
 ```
 
-If your system does not use `python`, use `py -3` in the commands above.
+Use `python` or `py -3` in the commands above.
 If script execution is blocked, run:
 
-```powershell
+```
 powershell -ExecutionPolicy Bypass -File .\scripts\run_assignment.ps1 -InputFile healthdataset/Health-Tweets/bbchealth.txt
 ```
 
@@ -73,7 +73,7 @@ python -m pip install -r requirements.txt
 2. Use the zip file:
    - https://archive.ics.uci.edu/static/public/438/health+news+in+twitter.zip
 3. Unzip it.
-4. Choose one file from `Health-Tweets/` (for example `usnewshealth.txt` or `cnnhealth.txt`).
+4. Choose one file from `Health-Tweets/` (for example `usnewshealth.txt` or `bbchealth.txt`).
 
 ## 3. Assignment Preprocessing Rules
 
@@ -109,7 +109,7 @@ Alternative helper script (runs tests first, then experiment):
 - `--init-strategy random` : strategy (`random`, `kmedoids++`, or `hybrid`).
    - `hybrid` tries both `random` and `kmedoids++` for each restart and keeps the best SSE.
 
-Assignment-baseline defaults are:
+Baseline defaults are:
 
 - `--n-init 1`
 - `--init-strategy random`
@@ -120,7 +120,7 @@ Assignment-baseline defaults are:
 Console output shows:
 
 - Per-K table with: `K`, `SSE`, `SSE/tweet`, `iterations`, min/max cluster sizes, empty cluster count, and full cluster sizes.
-- Assignment-required table with: `Value of K`, `SSE`, `Size of each cluster`.
+- Table with: `Value of K`, `SSE`, `Size of each cluster`.
 - Important run metrics summary with runtime, best SSE, best SSE/tweet, balance ratio, and iteration stats.
 
 ## 5.1 Files Produced After Every Run
@@ -128,17 +128,17 @@ Console output shows:
 Each run automatically writes all required metrics:
 
 - `results/assignment_results.csv`
-   - Assignment-only table columns: Value of K, SSE, Size of each cluster.
+   - Table columns: Value of K, SSE, Size of each cluster.
 - `results/kmeans_results.csv`
    - Latest run metrics table.
 - `results/runs/run_<run_id>_assignment.csv`
-   - Per-run assignment-only table snapshot.
+   - Per-run table snapshot.
 - `results/runs/run_<run_id>.csv`
    - Immutable snapshot of that specific run.
 - `results/run_history.csv`
    - Appended history across all runs (one row per K per run).
 - `results/latest_run_metrics.json`
-   - Structured metrics + summary for programmatic inspection.
+   - Structured metrics + summary.
 
 The metrics files include:
 
