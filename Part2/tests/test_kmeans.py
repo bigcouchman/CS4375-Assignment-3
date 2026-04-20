@@ -6,12 +6,15 @@ import sys
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+WORKSPACE_ROOT = PROJECT_ROOT.parent
 SRC_PATH = PROJECT_ROOT / "src"
+if str(WORKSPACE_ROOT) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE_ROOT))
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from tweet_clustering.jaccard_kmeans import JaccardKMeans, jaccard_distance
-from tweet_clustering.types import TweetRecord
+from Part2.src.tweet_clustering.jaccard_kmeans import JaccardKMeans, jaccard_distance
+from Part2.src.tweet_clustering.types import TweetRecord
 
 
 def _record(idx: int, text: str) -> TweetRecord:

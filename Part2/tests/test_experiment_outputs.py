@@ -9,11 +9,14 @@ import sys
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+WORKSPACE_ROOT = PROJECT_ROOT.parent
 SRC_PATH = PROJECT_ROOT / "src"
+if str(WORKSPACE_ROOT) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE_ROOT))
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from tweet_clustering.experiment import (
+from Part2.src.tweet_clustering.experiment import (
     ExperimentRow,
     append_history_csv,
     build_run_summary,
@@ -23,7 +26,7 @@ from tweet_clustering.experiment import (
     save_results_csv,
     save_run_metrics_json,
 )
-from tweet_clustering.types import TweetRecord
+from Part2.src.tweet_clustering.types import TweetRecord
 
 
 class TestExperimentOutputs(unittest.TestCase):

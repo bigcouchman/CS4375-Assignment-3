@@ -11,7 +11,7 @@ This repository is an implementation of tweet clustering for the UCI **Health Ne
 ## Project Structure
 
 ```
-CS4375-Assignment-3/
+Part2/
 ├─ run_experiment.py
 ├─ scripts/
 │  └─ run_assignment.ps1
@@ -32,9 +32,10 @@ CS4375-Assignment-3/
 
 ## Quick Start (Windows PowerShell)
 
-Run these commands from project root:
+From Project Root: 
 
 ```powershell
+cd Part2
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
@@ -89,7 +90,7 @@ The tweet is then represented as an unordered set of words for Jaccard distance.
 
 ## 4. Run Clustering Experiment (5+ K values)
 
-Run from repository root:
+Run from the Part2 folder:
 
 ```powershell
 python run_experiment.py --input-file healthdataset/Health-Tweets/bbchealth.txt --k-values 5 10 15 20 25 --max-iter 40 --seed 42 --n-init 1 --init-strategy random
@@ -127,7 +128,7 @@ Console output shows:
 
 Each run automatically writes all required metrics:
 
-- `results/assignment_results.csv`
+- `results/required_results.csv`
    - Table columns: Value of K, SSE, Size of each cluster.
 - `results/kmeans_results.csv`
    - Latest run metrics table.

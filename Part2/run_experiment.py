@@ -8,11 +8,15 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
+WORKSPACE_ROOT = PROJECT_ROOT.parent
 SRC_PATH = PROJECT_ROOT / "src"
+
+if str(WORKSPACE_ROOT) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE_ROOT))
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from tweet_clustering.experiment import (
+from Part2.src.tweet_clustering.experiment import (
     append_history_csv,
     format_assignment_table,
     format_results_table,
@@ -22,7 +26,7 @@ from tweet_clustering.experiment import (
     save_results_csv,
     save_run_metrics_json,
 )
-from tweet_clustering.preprocessing import load_and_preprocess_tweets
+from Part2.src.tweet_clustering.preprocessing import load_and_preprocess_tweets
 
 
 def parse_args() -> argparse.Namespace:
@@ -142,7 +146,7 @@ def main() -> None:
 
     print(format_results_table(rows))
     print()
-    print("Assignment-required table")
+    print("Required Table")
     print(format_assignment_table(rows))
     print()
     print(format_run_summary(rows, duration_seconds))
@@ -150,7 +154,7 @@ def main() -> None:
     results_dir = args.output_csv.parent
     history_csv_path = results_dir / "run_history.csv"
     latest_metrics_json_path = results_dir / "latest_run_metrics.json"
-    assignment_csv_path = results_dir / "assignment_results.csv"
+    assignment_csv_path = results_dir / "required_results.csv"
     per_run_csv_path = results_dir / "runs" / f"run_{run_id}.csv"
     per_run_assignment_csv_path = results_dir / "runs" / f"run_{run_id}_assignment.csv"
 
