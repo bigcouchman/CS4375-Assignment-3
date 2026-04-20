@@ -180,7 +180,7 @@ Tests cover:
 - Because clustering is seed-sensitive, `--n-init` runs multiple restarts per K and keeps the best solution automatically.
 - Internally, pairwise Jaccard distances are cached across trials to improve runtime for restart-heavy runs.
 
-## 10. Quick Start (Copy/Paste)
+## 8. Quick Start (Copy/Paste)
 
 ```powershell
 python -m venv .venv
