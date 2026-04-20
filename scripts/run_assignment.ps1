@@ -8,6 +8,11 @@ param(
 
     [int]$Seed = 42,
 
+    [int]$NInit = 1,
+
+    [ValidateSet("random", "kmedoids++", "hybrid")]
+    [string]$InitStrategy = "random",
+
     [string]$OutputCsv = "results/kmeans_results.csv"
 )
 
@@ -22,7 +27,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "[2/2] Running clustering experiment..." -ForegroundColor Cyan
-python run_experiment.py --input-file $InputFile --k-values $KValues.Split(' ') --max-iter $MaxIter --seed $Seed --output-csv $OutputCsv
+python run_experiment.py --input-file $InputFile --k-values $KValues.Split(' ') --max-iter $MaxIter --seed $Seed --n-init $NInit --init-strategy $InitStrategy --output-csv $OutputCsv
 if ($LASTEXITCODE -ne 0) {
     throw "Experiment run failed."
 }

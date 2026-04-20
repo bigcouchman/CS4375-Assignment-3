@@ -68,6 +68,30 @@ class TestKMeans(unittest.TestCase):
         self.assertEqual(len(result.cluster_sizes), 3)
         self.assertEqual(sum(result.cluster_sizes), len(tweets))
 
+    def test_kmedoids_plus_plus_initialization(self) -> None:
+        tweets = [
+            _record(1, "heart health"),
+            _record(2, "heart care"),
+            _record(3, "flu vaccine"),
+            _record(4, "flu study"),
+            _record(5, "fitness workout"),
+        ]
+
+        model = JaccardKMeans(
+            k=3,
+            max_iter=20,
+            random_state=11,
+            init_strategy="kmedoids++",
+        )
+        result = model.fit(tweets)
+
+        self.assertEqual(result.k, 3)
+        self.assertEqual(len(set(result.centroid_indices)), 3)
+
+    def test_invalid_init_strategy_raises(self) -> None:
+        with self.assertRaises(ValueError):
+            JaccardKMeans(k=2, init_strategy="bad-strategy")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -92,7 +92,7 @@ The tweet is then represented as an unordered set of words for Jaccard distance.
 Run from repository root:
 
 ```powershell
-python run_experiment.py --input-file healthdataset/Health-Tweets/bbchealth.txt --k-values 5 10 15 20 25 --max-iter 40 --seed 42
+python run_experiment.py --input-file healthdataset/Health-Tweets/bbchealth.txt --k-values 5 10 15 20 25 --max-iter 40 --seed 42 --n-init 1 --init-strategy random
 ```
 
 Alternative helper script (runs tests first, then experiment):
@@ -105,20 +105,34 @@ Alternative helper script (runs tests first, then experiment):
 
 - `--output-csv results/kmeans_results.csv` : where to save the final table.
 - `--keep-empty` : keep tweets that become empty after preprocessing (default is drop them).
+- `--n-init 1` : number of restart trials per K.
+- `--init-strategy random` : strategy (`random`, `kmedoids++`, or `hybrid`).
+   - `hybrid` tries both `random` and `kmedoids++` for each restart and keeps the best SSE.
+
+Assignment-baseline defaults are:
+
+- `--n-init 1`
+- `--init-strategy random`
+- The CLI enforces at least 5 distinct K values per assignment requirement.
 
 ## 5. Output Format
 
 Console output shows:
 
 - Per-K table with: `K`, `SSE`, `SSE/tweet`, `iterations`, min/max cluster sizes, empty cluster count, and full cluster sizes.
+- Assignment-required table with: `Value of K`, `SSE`, `Size of each cluster`.
 - Important run metrics summary with runtime, best SSE, best SSE/tweet, balance ratio, and iteration stats.
 
 ## 5.1 Files Produced After Every Run
 
 Each run automatically writes all required metrics:
 
+- `results/assignment_results.csv`
+   - Assignment-only table columns: Value of K, SSE, Size of each cluster.
 - `results/kmeans_results.csv`
    - Latest run metrics table.
+- `results/runs/run_<run_id>_assignment.csv`
+   - Per-run assignment-only table snapshot.
 - `results/runs/run_<run_id>.csv`
    - Immutable snapshot of that specific run.
 - `results/run_history.csv`
@@ -132,6 +146,12 @@ The metrics files include:
 - `sse`
 - `sse_per_tweet`
 - `iterations`
+- `init_strategy`
+- `init_trials`
+- `best_init_seed`
+- `best_init_strategy`
+- `mean_trial_sse`
+- `std_trial_sse`
 - `min_cluster_size`
 - `max_cluster_size`
 - `empty_clusters`
@@ -156,7 +176,8 @@ Tests cover:
 ## 7. Reproducibility
 
 - Use `--seed` for deterministic initialization.
-- Because clustering is seed-sensitive, you can run multiple seeds and report the best/average SSE if your instructor asks for deeper analysis.
+- Because clustering is seed-sensitive, `--n-init` runs multiple restarts per K and keeps the best solution automatically.
+- Internally, pairwise Jaccard distances are cached across trials to improve runtime for restart-heavy runs.
 
 ## 10. Quick Start (Copy/Paste)
 
@@ -164,6 +185,6 @@ Tests cover:
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-python run_experiment.py --input-file healthdataset/Health-Tweets/bbchealth.txt --k-values 5 10 15 20 25 --max-iter 40 --seed 42
+python run_experiment.py --input-file healthdataset/Health-Tweets/bbchealth.txt --k-values 5 10 15 20 25 --max-iter 40 --seed 42 --n-init 1 --init-strategy random
 python -m unittest discover -s tests -v
 ```

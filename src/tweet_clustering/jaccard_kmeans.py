@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, List, MutableMapping, Sequence, Tuple
 
 from .types import TweetRecord
 
@@ -41,21 +41,31 @@ class JaccardKMeans:
         max_iter: int = 40,
         random_state: int | None = None,
         initial_centroid_indices: Sequence[int] | None = None,
+        init_strategy: str = "random",
+        distance_cache: MutableMapping[Tuple[int, int], float] | None = None,
     ) -> None:
         if k <= 0:
             raise ValueError("k must be positive")
         if max_iter <= 0:
             raise ValueError("max_iter must be positive")
+        if init_strategy not in {"random", "kmedoids++"}:
+            raise ValueError("init_strategy must be 'random' or 'kmedoids++'")
 
         self.k = k
         self.max_iter = max_iter
         self.random_state = random_state
         self.initial_centroid_indices = list(initial_centroid_indices or [])
+        self.init_strategy = init_strategy
         self._rng = random.Random(random_state)
 
         self._tweets: Sequence[TweetRecord] = []
         self._n = 0
-        self._distance_cache: Dict[Tuple[int, int], float] = {}
+        if distance_cache is None:
+            self._distance_cache: MutableMapping[Tuple[int, int], float] = {}
+            self._owns_distance_cache = True
+        else:
+            self._distance_cache = distance_cache
+            self._owns_distance_cache = False
 
     def fit(self, tweets: Sequence[TweetRecord]) -> ClusterResult:
         self._tweets = tweets
@@ -64,7 +74,8 @@ class JaccardKMeans:
         if self.k > self._n:
             raise ValueError(f"k={self.k} cannot be greater than number of tweets={self._n}")
 
-        self._distance_cache.clear()
+        if self._owns_distance_cache:
+            self._distance_cache.clear()
         centroids = self._initialize_centroids()
 
         clusters: Dict[int, List[int]] = {i: [] for i in range(self.k)}
@@ -113,7 +124,59 @@ class JaccardKMeans:
 
             return list(self.initial_centroid_indices)
 
-        return self._rng.sample(range(self._n), self.k)
+        if self.init_strategy == "random":
+            return self._rng.sample(range(self._n), self.k)
+
+        return self._initialize_centroids_kmedoids_pp()
+
+    def _initialize_centroids_kmedoids_pp(self) -> List[int]:
+        """Distance centroid initialization for k-medoids.
+
+        """
+        if self.k == 1:
+            return [self._rng.randrange(self._n)]
+
+        centroids = [self._rng.randrange(self._n)]
+        selected = {centroids[0]}
+
+        while len(centroids) < self.k:
+            candidates: List[int] = []
+            weights: List[float] = []
+
+            for point_idx in range(self._n):
+                if point_idx in selected:
+                    continue
+
+                nearest = min(self._distance(point_idx, c_idx) for c_idx in centroids)
+                weight = nearest * nearest
+                candidates.append(point_idx)
+                weights.append(weight)
+
+            if not candidates:
+                break
+
+            total_weight = sum(weights)
+            if total_weight <= 0:
+                next_idx = self._rng.choice(candidates)
+            else:
+                threshold = self._rng.random() * total_weight
+                cumulative = 0.0
+                next_idx = candidates[-1]
+                for candidate, weight in zip(candidates, weights):
+                    cumulative += weight
+                    if cumulative >= threshold:
+                        next_idx = candidate
+                        break
+
+            centroids.append(next_idx)
+            selected.add(next_idx)
+
+        if len(centroids) < self.k:
+            remaining = [idx for idx in range(self._n) if idx not in selected]
+            fill_count = self.k - len(centroids)
+            centroids.extend(self._rng.sample(remaining, fill_count))
+
+        return centroids
 
     def _assign_points(self, centroids: Sequence[int]) -> List[int]:
         assignments = [-1] * self._n

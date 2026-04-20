@@ -22,7 +22,6 @@ class LoadResult:
 def parse_tweet_line(line: str) -> Tuple[str, str, str]:
     """Parse one dataset line: tweet_id|timestamp|tweet_text.
 
-    If a line is malformed, the whole line is treated as tweet text.
     """
     parts = line.rstrip("\n").split("|", 2)
     if len(parts) == 3:
@@ -32,7 +31,7 @@ def parse_tweet_line(line: str) -> Tuple[str, str, str]:
 
 
 def preprocess_tweet_text(text: str) -> List[str]:
-    """Apply preprocessing to tweet text.
+    """Preprocess.
 
     - remove URLs
     - lowercase
@@ -45,7 +44,7 @@ def preprocess_tweet_text(text: str) -> List[str]:
     for raw_token in no_urls.split():
         token = raw_token.lower().strip()
 
-        # Remove mention tokens before punctuation stripping so '@name' is dropped.
+        # Remove mention tokens
         if token.startswith("@"):
             continue
 
