@@ -1,0 +1,6 @@
+K,SSE,SSE_per_Tweet,Iterations,Max_Size,Min_Size,Ratio
+5,6345.6223,"1: 1505 tweets, 2: 371 tweets, 3: 1311 tweets, 4: 2975 tweets, 5: 1701 tweets"
+10,6154.011,"1: 914 tweets, 2: 618 tweets, 3: 382 tweets, 4: 764 tweets, 5: 813 tweets, 6: 593 tweets, 7: 1274 tweets, 8: 550 tweets, 9: 762 tweets, 10: 1193 tweets"
+15,6013.0212,"1: 485 tweets, 2: 479 tweets, 3: 83 tweets, 4: 720 tweets, 5: 755 tweets, 6: 491 tweets, 7: 38 tweets, 8: 163 tweets, 9: 347 tweets, 10: 485 tweets, 11: 853 tweets, 12: 622 tweets, 13: 462 tweets, 14: 450 tweets, 15: 1430 tweets"
+20,5936.6679,"1: 291 tweets, 2: 463 tweets, 3: 569 tweets, 4: 550 tweets, 5: 339 tweets, 6: 243 tweets, 7: 363 tweets, 8: 563 tweets, 9: 721 tweets, 10: 267 tweets, 11: 325 tweets, 12: 130 tweets, 13: 557 tweets, 14: 332 tweets, 15: 445 tweets, 16: 180 tweets, 17: 190 tweets, 18: 436 tweets, 19: 416 tweets, 20: 483 tweets"
+25,5955.7731,"1: 713 tweets, 2: 159 tweets, 3: 159 tweets, 4: 495 tweets, 5: 325 tweets, 6: 187 tweets, 7: 772 tweets, 8: 259 tweets, 9: 37 tweets, 10: 630 tweets, 11: 143 tweets, 12: 435 tweets, 13: 98 tweets, 14: 469 tweets, 15: 65 tweets, 16: 531 tweets, 17: 233 tweets, 18: 479 tweets, 19: 335 tweets, 20: 180 tweets, 21: 35 tweets, 22: 596 tweets, 23: 250 tweets, 24: 154 tweets, 25: 124 tweets"

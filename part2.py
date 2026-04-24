@@ -1,3 +1,7 @@
+# Assignment 3 Tweet Clustering by Nguyen Do and Casey Nguyen
+# Cluster tweets using Jaccard Distance calculation
+
+# Import libraries
 import re
 import random
 import string
@@ -6,25 +10,28 @@ import time
 from datetime import datetime
 from dataclasses import dataclass
 
+# A tweet class 
 @dataclass
 class Tweet:
     id: str
     words: set
 
+# Data preprocessing
 def preprocess_data(raw_data):
+    # Strip down the tweets to just words, add into a list of words
     text = re.sub(r'https?://\S+', '', raw_data.lower())
-    
     words = []
     for i in text.split():
         if i.startswith('@'):
             continue
 
-        word = i.strip(string.punctuation)
+        word = i.strip(string.punctuation).replace('#', '')
         if word:
             words.append(word)
     
     return set(words)
 
+# For a specific file, preprocess every tweet in this file and add into a tweet list.
 def loading_data(file_path):
     tweet_list = []
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -37,9 +44,10 @@ def loading_data(file_path):
     
     return tweet_list
 
-
+# A distance cache for jaccard distance
 distance_cache = {}
 
+# Calculate jaccard distance between 2 sets
 def calc_jaccard_distance(a, b):
     cache_id = tuple(sorted((id(a), id(b))))
     if cache_id in distance_cache:
@@ -52,6 +60,7 @@ def calc_jaccard_distance(a, b):
 
     return distance
 
+# Perform k mean clustering
 def kmeans_cluster(tweet_list, k):
     distance_cache.clear()
     centroid = random.sample(tweet_list, k)
@@ -61,6 +70,7 @@ def kmeans_cluster(tweet_list, k):
         iters = iters + 1
         cluster_list = [[] for _ in range(k)]
         
+        # Assign the tweet to a cluster based on the distance from the centroid
         for j in tweet_list:
             distance = [calc_jaccard_distance(j, l) for l in centroid]
             nearest_ind = distance.index(min(distance))
@@ -89,10 +99,11 @@ def kmeans_cluster(tweet_list, k):
     return cluster_list, centroid, iters
 
 if __name__ == "__main__":
-    path = "Health-Tweets/bbchealth.txt"
+    
+    path = "Health-Tweets/goodhealth.txt"
     tweets = loading_data(path)
     k_list = [5, 10, 15, 20, 25]
-
+    
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     csv_file = f"k_values_table_{timestamp}.csv"
     
@@ -106,8 +117,7 @@ if __name__ == "__main__":
             sse = sum(sum(calc_jaccard_distance(c, centroids[i])**2 for c in clusters[i]) for i in range(k))
 
             sizes = [len(c) for c in clusters]
-            mx, mn = max(sizes), min(sizes)
-            ratio = mx / mn if mn > 0 else float('inf')
-        
-            writer.writerow([k, round(sse, 4), round(sse/len(tweets), 4), iterations, mx, mn, round(ratio, 2)])
-            print(f"{k:>4} | {sse:>10.2f} | {iterations:>5} | {ratio:>6.1f}")
+            size_output = ", ".join([f"{i+1}: {size} tweets" for i, size in enumerate(sizes)])
+
+            print(f"{k:>4} | {sse:>10.2f} | {size_output}")
+            writer.writerow([k, round(sse, 4), size_output])
