@@ -1,3 +1,7 @@
+# CS 4375 Assignment 2 by Casey Nguyen and Nguyen Do
+# Tweet Clustering using Jaccard Distance Calculation
+
+# Import libraries
 import re
 import random
 import string
@@ -7,8 +11,7 @@ import os
 import time
 from datetime import datetime
 
-# Preprocessing
-
+# Preprocessing function
 URL_RE = re.compile(r'https?://\S+|www\.\S+', re.IGNORECASE)
 
 def preprocess(text):
@@ -20,12 +23,15 @@ def preprocess(text):
             continue
         word = word.lstrip('#')          # strip # from hashtags
         word = word.strip(string.punctuation)
-        if word:
+        if word:                        # Add non empty words into list
             tokens.append(word)
     return frozenset(tokens)
 
+# Loading function
 def load_tweets(path):
     """Load and preprocess a tweet file."""
+
+    # Every tweet is divided to 3 parts, take the 3rd part (text)
     tweets = []
     with open(path, encoding='utf-8', errors='ignore') as f:
         for line in f:
@@ -36,8 +42,7 @@ def load_tweets(path):
                     tweets.append(words)
     return tweets
 
-# Jaccard Distance
-
+# Jaccard Distance function
 def jaccard(a, b):
     union = a | b
     return 1.0 - len(a & b) / len(union) if union else 0.0
@@ -48,10 +53,10 @@ def kmeans(tweets, k, max_iter=100, seed=None):
     """K-means clustering using Jaccard distance and medoid centroid update."""
     rng = random.Random(seed)
     n = len(tweets)
-    centroids = rng.sample(range(n), k)
+    centroids = rng.sample(range(n), k)         # Select k random unique tweets to be initial centroids
 
     for _ in range(max_iter):
-        # Assignment
+        # Assignment, each centroid contains the closest tweets
         clusters = [[] for _ in range(k)]
         for i in range(n):
             best = min(range(k), key=lambda c: jaccard(tweets[i], tweets[centroids[c]]))
@@ -68,7 +73,8 @@ def kmeans(tweets, k, max_iter=100, seed=None):
                 key=lambda m: sum(jaccard(tweets[m], tweets[o]) for o in members)
             )
             new_centroids.append(medoid)
-
+        
+        # Check if centroids update
         if new_centroids == centroids:
             break
         centroids = new_centroids
@@ -97,6 +103,7 @@ if __name__ == '__main__':
     for k in k_values:
         start_time = time.time()
 
+        # Clustering with fixed seed, and csv file format
         clusters, sse = kmeans(tweets, k, seed=42)
 
         end_time = time.time()
@@ -124,6 +131,7 @@ if __name__ == '__main__':
 
     file_path = os.path.join(base_folder, f"run{run_number}.csv")
 
+    # Every run record these values to be put in a table (needed for submission)
     with open(file_path, 'w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(
             f,
