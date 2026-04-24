@@ -6,7 +6,7 @@
 ## Requirements
 
 - Python 3.8+
-- **No third-party libraries** — uses the Python standard library
+- No third-party libraries — uses the Python standard library
 
 ## Dataset
 
@@ -28,7 +28,7 @@ cd Part2
 python kmeans_tweets.py Health-Tweets/bbchealth.txt
 ```
 
-Or use the default path:
+Or use the default path (runs bbchealth.txt):
 
 ```bash
 python kmeans_tweets.py
@@ -50,7 +50,7 @@ K     SSE         Runetime    Cluster sizes
 
 ## Algorithm Notes
 
-- **Preprocessing**: removes tweet ID and timestamp, strips `@mentions`, converts `#hashtag` → `hashtag`, removes URLs, lowercases all words.
-- **Similarity**: Jaccard distance — `1 − |A ∩ B| / |A ∪ B|` on word sets.
-- **Centroid**: medoid — the tweet in each cluster with minimum total Jaccard distance to all other members.
-- **K values tested**: 5, 10, 15, 20, 25
+- Preprocessing: removes tweet ID and timestamp, strips `@mentions`, converts `#hashtag` → `hashtag`, removes URLs, lowercases all words.
+- Similarity: Jaccard distance — `1 − |A ∩ B| / |A ∪ B|` on word sets.
+- Centroid: medoid — the tweet in each cluster with minimum total Jaccard distance to all other members.
+- K values tested: 5, 10, 15, 20, 25
