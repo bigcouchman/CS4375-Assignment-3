@@ -14,9 +14,15 @@ Download from UCI:
 https://archive.ics.uci.edu/ml/datasets/Health+News+in+Twitter
 
 Go to the link and download the datafile. Then unzip the file and add to the part 2 
-folder. Afterwards pick a .txt to run the model
+folder. Afterwards pick a .txt to run the model. 
+
+Note the dataset is already in Part2 for you, the TA
 
 ## How to Run
+
+``` bash
+cd Part2
+```
 
 ```bash
 python kmeans_tweets.py Health-Tweets/bbchealth.txt
@@ -35,10 +41,10 @@ The commands prints a results table in the termnial and saves a copy to `/result
 EX:
 
 ```
-K     SSE           Cluster sizes
+K     SSE         Runetime    Cluster sizes
 ----------------------------------------------------------------------
-5     3342.1200     1: 1900 tweets; 2: 540 tweets; ...
-10    3241.5800     1: 1600 tweets; 2: 100 tweets; ...
+5     3342.1200   13.3737     1: 1900 tweets; 2: 540 tweets; ...
+10    3241.5800   9.2982      1: 1600 tweets; 2: 100 tweets; ...
 ...
 ```
 
