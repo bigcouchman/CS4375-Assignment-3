@@ -1,10 +1,13 @@
+# Python cache
 __pycache__/
-*.py[cod]
-.venv/
-venv/
-.env
+*.pyc
 
-# Local data and experiment outputs
-data/
-*.zip
-healthdataset/
+# OS Mac
+.DS_Store
+
+# IDE / editor files
+.vscode/
+.idea/
+
+# Logs
+*.log
