@@ -48,7 +48,6 @@ def jaccard(a, b):
     return 1.0 - len(a & b) / len(union) if union else 0.0
 
 # K-Means Clustering
-
 def kmeans(tweets, k, max_iter=100, seed=None):
     """K-means clustering using Jaccard distance and medoid centroid update."""
     rng = random.Random(seed)
@@ -56,7 +55,7 @@ def kmeans(tweets, k, max_iter=100, seed=None):
     centroids = rng.sample(range(n), k)         # Select k random unique tweets to be initial centroids
 
     for _ in range(max_iter):
-        # Assignment, each centroid contains the closest tweets
+        # Assignment; each centroid contains the closest tweets
         clusters = [[] for _ in range(k)]
         for i in range(n):
             best = min(range(k), key=lambda c: jaccard(tweets[i], tweets[centroids[c]]))
