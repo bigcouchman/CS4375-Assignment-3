@@ -1,4 +1,4 @@
-# CS 4375 Assignment 2 by Casey Nguyen and Nguyen Do
+# CS 4375 Assignment 3 by Casey Nguyen and Nguyen Do
 # Tweet Clustering using Jaccard Distance Calculation
 
 # Import libraries
