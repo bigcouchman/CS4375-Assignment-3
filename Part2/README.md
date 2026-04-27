@@ -16,12 +16,13 @@ https://archive.ics.uci.edu/static/public/438/health+news+in+twitter.zip
 
 ## How to Run
 
-```
-.\.venv\Scripts\Activate
-```
-
 ``` bash
 cd Part2
+```
+
+```
+python -m venv venv
+.\venv\Scripts\Activate
 ```
 
 ```bash

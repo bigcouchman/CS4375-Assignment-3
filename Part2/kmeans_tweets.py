@@ -1,7 +1,7 @@
 # CS 4375 Assignment 3 by Casey Nguyen and Nguyen Do
 # Tweet Clustering using Jaccard Distance Calculation
 # We use 1 free day to tidy up our code and let it run without having the dataset
-# downloaded. Instructions to run in README.md
+# downloaded on local computer. Instructions to run in README.md
 
 # Import libraries
 import io
@@ -197,7 +197,7 @@ if __name__ == '__main__':
     print(f"Loaded {len(tweets)} tweets from {member_path}\n")
 
     # Get dataset name
-    dataset = os.path.basename(member_path)        # bbchealth.txt
+    dataset = os.path.basename(member_path)   # bbchealth.txt
     dataset = os.path.splitext(dataset)[0]    # bbchealth
 
     # Run the clustering for 5 k values
