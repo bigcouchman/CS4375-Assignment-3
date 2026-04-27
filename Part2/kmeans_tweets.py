@@ -92,20 +92,12 @@ def df_loading():
                     dfs.append(df)
 
             if not dfs:
-<<<<<<< HEAD
                 raise ValueError('No files were valid.')
-=======
-                raise ValueError('No .txt files were found.')
->>>>>>> be535f6783410b2365e7bc33ce3ab81726d58545
 
             return pd.concat(dfs, ignore_index=True)
     # Error handling for bad zip
     except zipfile.BadZipFile as exc:
-<<<<<<< HEAD
         raise ValueError('Cannot download dataset') from exc
-=======
-        raise ValueError('Error processing downloaded zipfile.') from exc
->>>>>>> be535f6783410b2365e7bc33ce3ab81726d58545
 
 # When running the code, user can run on one file of their choice from the dataframe
 def src_df(full_df, member_path):
@@ -133,16 +125,7 @@ def final_loading(tweet_file=DEFAULT_FILE):
     full_df = df_loading()
     source_df = src_df(full_df, member_path)
 
-<<<<<<< HEAD
     # Store the tweets using the preprocessing function
-=======
-def load_tweets_from_dataset_438(tweet_file=DEFAULT_TWEET_FILE):
-    """Load and preprocess tweets from a specific .txt."""
-    member_path = _normalize_member_path(tweet_file)
-    full_df = _load_full_dataframe_from_dataset_438()
-    source_df = _select_source_dataframe(full_df, member_path)
-
->>>>>>> be535f6783410b2365e7bc33ce3ab81726d58545
     tweets = []
     for value in source_df['tweet'].fillna(''):
         words = preprocess(str(value))
