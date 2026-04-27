@@ -1,5 +1,7 @@
 # CS 4375 Assignment 2 by Casey Nguyen and Nguyen Do
 # Tweet Clustering using Jaccard Distance Calculation
+# We use 1 free day to tidy up our code and let it run without having the dataset
+# downloaded. Instructions to run in README.md
 
 # Import libraries
 import io
@@ -15,11 +17,12 @@ from datetime import datetime
 import pandas as pd
 import requests
 
-# Preprocessing function
+# Constants to run the program
 URL_RE = re.compile(r'https?://\S+|www\.\S+', re.IGNORECASE)
-DATASET_438_ZIP_URL = 'https://archive.ics.uci.edu/static/public/438/health+news+in+twitter.zip'
-DEFAULT_TWEET_FILE = 'Health-Tweets/bbchealth.txt'
+DATASET_URL = 'https://archive.ics.uci.edu/static/public/438/health+news+in+twitter.zip'
+DEFAULT_FILE = 'Health-Tweets/bbchealth.txt'
 
+# Preprocessing function
 def preprocess(text):
     """Return a set of cleaned tokens from raw tweet text."""
     text = URL_RE.sub('', text.lower())
@@ -33,31 +36,33 @@ def preprocess(text):
             tokens.append(word)
     return frozenset(tokens)
 
-# Loading function
-def _normalize_member_path(tweet_file):
+# Let tweet file paths to be consistent when loading them
+def check_path(tweet_file):
     member = tweet_file.replace('\\', '/').strip().lstrip('/')
     if not member:
-        member = DEFAULT_TWEET_FILE
+        member = DEFAULT_FILE
     if '/' not in member:
         member = f'Health-Tweets/{member}'
     return member
 
-
-def _load_full_dataframe_from_dataset_438():
+# Data loading function, download from the UCI url and look through all txt files
+def df_loading():
     try:
-        response = requests.get(DATASET_438_ZIP_URL, timeout=60)
+        response = requests.get(DATASET_URL, timeout=60)
         response.raise_for_status()
     except requests.RequestException as exc:
-        raise ConnectionError(f'Could not download dataset 438 from {DATASET_438_ZIP_URL}') from exc
+        raise ConnectionError(f'Failed to load dataset: {DATASET_URL}') from exc
 
+    # Open the zip file from the url
     try:
-        with zipfile.ZipFile(io.BytesIO(response.content)) as archive:
+        with zipfile.ZipFile(io.BytesIO(response.content)) as a:
             dfs = []
-            for name in archive.namelist():
+            for name in a.namelist():
                 if not name.lower().endswith('.txt'):
                     continue
-
-                with archive.open(name) as file_obj:
+                
+                # For every file, separate the 3 parts per tweet
+                with a.open(name) as file_obj:
                     try:
                         df = pd.read_csv(
                             file_obj,
@@ -73,63 +78,69 @@ def _load_full_dataframe_from_dataset_438():
                     if not isinstance(df, pd.DataFrame):
                         continue
 
+                    # Handles ny extra columns or missing columns
                     df = df.copy()
-
                     if df.shape[1] < 3:
                         continue
-
                     if df.shape[1] > 3:
                         df[2] = df.loc[:, 2:].fillna('').astype(str).agg('|'.join, axis=1)
 
+                    # Store the 3 parts, and add to the dataframe
                     df = df.iloc[:, :3]
                     df.columns = ['id', 'datetime', 'tweet']
                     df['source'] = name.replace('\\', '/')
                     dfs.append(df)
 
             if not dfs:
-                raise ValueError('No .txt files were found in dataset 438 archive.')
+                raise ValueError('No files were valid.')
 
             return pd.concat(dfs, ignore_index=True)
+    # Error handling for bad zip
     except zipfile.BadZipFile as exc:
-        raise ValueError('Downloaded dataset 438 archive is not a valid zip file.') from exc
+        raise ValueError('Cannot download dataset') from exc
 
+# When running the code, user can run on one file of their choice from the dataframe
+def src_df(full_df, member_path):
 
-def _select_source_dataframe(full_df, member_path):
-    sources = full_df['source'].astype(str).str.replace('\\', '/', regex=False)
+    # Get the parts of the relative path when running the code 
+    src = full_df['source'].astype(str).str.replace('\\', '/', regex=False)
     if '/' in member_path:
-        mask = sources.eq(member_path) | sources.str.endswith('/' + member_path)
+        mask = src.eq(member_path) | src.str.endswith('/' + member_path)
     else:
-        mask = sources.eq(member_path) | sources.str.endswith('/' + member_path)
-
+        mask = src.eq(member_path) | src.str.endswith('/' + member_path)
+    
+    # Error handling for non available file
     selected = full_df[mask]
     if selected.empty:
-        available = sorted(sources.unique())
-        sample = ', '.join(available[:6])
+        available = sorted(src.unique())
         raise FileNotFoundError(
-            f'{member_path} was not found in dataset 438. Example files: {sample}'
+            f'{member_path} was not found.'
         )
     return selected
 
+# Final loading function and preprocessing
+def final_loading(tweet_file=DEFAULT_FILE):
+    """Load and preprocess tweets from a specific .txt"""
+    member_path = check_path(tweet_file)
+    full_df = df_loading()
+    source_df = src_df(full_df, member_path)
 
-def load_tweets_from_dataset_438(tweet_file=DEFAULT_TWEET_FILE):
-    """Load and preprocess tweets from a specific .txt in UCI dataset 438."""
-    member_path = _normalize_member_path(tweet_file)
-    full_df = _load_full_dataframe_from_dataset_438()
-    source_df = _select_source_dataframe(full_df, member_path)
-
+    # Store the tweets using the preprocessing function
     tweets = []
     for value in source_df['tweet'].fillna(''):
         words = preprocess(str(value))
         if words:
             tweets.append(words)
 
+    # If tweets are invalid, return error
     if not tweets:
-        raise ValueError(f'No tweets were parsed from {member_path}.')
+        raise ValueError(f'Invalid tweets from {member_path}.')
 
+    # Return the tweets and paths
     return tweets, member_path
 
 # Jaccard Distance function
-def jaccard(a, b):
+def jaccard_distance(a, b):
     union = a | b
     return 1.0 - len(a & b) / len(union) if union else 0.0
 
@@ -140,12 +151,14 @@ def kmeans(tweets, k, max_iter=100, seed=None):
     n = len(tweets)
     centroids = rng.sample(range(n), k)
 
+    # Assignment a centroid per cluster
     for _ in range(max_iter):
         clusters = [[] for _ in range(k)]
         for i in range(n):
-            best = min(range(k), key=lambda c: jaccard(tweets[i], tweets[centroids[c]]))
+            best = min(range(k), key=lambda c: jaccard_distance(tweets[i], tweets[centroids[c]]))
             clusters[best].append(i)
-
+        
+        # Update the centroid, find the closest tweet to centroidper cluster
         new_centroids = []
         for ci, members in enumerate(clusters):
             if not members:
@@ -153,37 +166,41 @@ def kmeans(tweets, k, max_iter=100, seed=None):
                 continue
             medoid = min(
                 members,
-                key=lambda m: sum(jaccard(tweets[m], tweets[o]) for o in members)
+                key=lambda m: sum(jaccard_distance(tweets[m], tweets[o]) for o in members)
             )
             new_centroids.append(medoid)
 
+        # If the center doesn't change, break
         if new_centroids == centroids:
             break
         centroids = new_centroids
 
+    # Find SSE per k value
     sse = sum(
-        jaccard(tweets[i], tweets[centroids[c]]) ** 2
+        jaccard_distance(tweets[i], tweets[centroids[c]]) ** 2
         for c, members in enumerate(clusters)
         for i in members
     )
     return clusters, sse
 
-# Main
+# Main function
 if __name__ == '__main__':
-    tweet_file = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_TWEET_FILE
-
+    tweet_file = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_FILE
+    
+    # Get the tweets and path 
     try:
-        tweets, member_path = load_tweets_from_dataset_438(tweet_file)
+        tweets, member_path = final_loading(tweet_file)
     except (ConnectionError, FileNotFoundError, ValueError) as exc:
-        print(f'Error loading tweets from dataset 438: {exc}')
+        print(f'Error loading tweets: {exc}')
         sys.exit(1)
 
-    print(f"Loaded {len(tweets)} tweets from dataset 438 file {member_path}\n")
+    print(f"Loaded {len(tweets)} tweets from {member_path}\n")
 
-    # 🔥 Extract dataset name for filename
-    dataset_name = os.path.basename(member_path)        # bbchealth.txt
-    dataset_name = os.path.splitext(dataset_name)[0]    # bbchealth
+    # Get dataset name
+    dataset = os.path.basename(member_path)        # bbchealth.txt
+    dataset = os.path.splitext(dataset)[0]    # bbchealth
 
+    # Run the clustering for 5 k values
     k_values = [5, 10, 15, 20, 25]
     rows = []
 
@@ -191,35 +208,36 @@ if __name__ == '__main__':
     print('-' * 90)
 
     for k in k_values:
+        # Call the k means clustering with a set seed, track time of clusters forming
         start_time = time.time()
-
         clusters, sse = kmeans(tweets, k, seed=42)
-
         end_time = time.time()
         runtime = round(end_time - start_time, 4)
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
+        
+        # Record these values in a table to store in the csv
         sizes = '; '.join(f'{i+1}: {len(c)} tweets' for i, c in enumerate(clusters))
         print(f"{k:<5} {sse:<12.4f} {runtime:<12}  {sizes}")
-
         rows.append({
             'Value of K': k,
             'SSE': round(sse, 4),
             'Runtime': runtime,
             'Timestamp': timestamp,
-            'Size of each cluster': sizes
+            'Cluster Size': sizes
         })
 
     # Save results
-    base_folder = "results"
-    os.makedirs(base_folder, exist_ok=True)
+    res_folder = "results"
+    os.makedirs(res_folder, exist_ok=True)
 
-    run_number = 1
-    while os.path.exists(os.path.join(base_folder, f"run{run_number}_{dataset_name}.csv")):
-        run_number += 1
+    # Store the results as run number for respective txt files
+    run_num = 1
+    while os.path.exists(os.path.join(res_folder, f"run{run_num}_{dataset}.csv")):
+        run_num += 1
 
-    file_path = os.path.join(base_folder, f"run{run_number}_{dataset_name}.csv")
+    file_path = os.path.join(res_folder, f"run{run_num}_{dataset}.csv")
 
+    # Write in csv file and store in results
     with open(file_path, 'w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(
             f,
@@ -228,7 +246,7 @@ if __name__ == '__main__':
                 'SSE',
                 'Runtime',
                 'Timestamp',
-                'Size of each cluster'
+                'Cluster Size'
             ]
         )
         writer.writeheader()

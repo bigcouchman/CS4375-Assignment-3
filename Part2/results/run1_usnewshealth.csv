@@ -1,0 +1,6 @@
+Value of K,SSE,Runtime,Timestamp,Size of each cluster
+5,1057.43,1.0962,2026-04-26 22:39:56,1: 344 tweets; 2: 260 tweets; 3: 115 tweets; 4: 482 tweets; 5: 129 tweets
+10,1023.4111,0.6665,2026-04-26 22:39:56,1: 71 tweets; 2: 104 tweets; 3: 111 tweets; 4: 338 tweets; 5: 102 tweets; 6: 17 tweets; 7: 44 tweets; 8: 159 tweets; 9: 160 tweets; 10: 224 tweets
+15,999.7186,0.5081,2026-04-26 22:39:57,1: 35 tweets; 2: 93 tweets; 3: 104 tweets; 4: 270 tweets; 5: 54 tweets; 6: 17 tweets; 7: 47 tweets; 8: 99 tweets; 9: 159 tweets; 10: 177 tweets; 11: 38 tweets; 12: 67 tweets; 13: 25 tweets; 14: 96 tweets; 15: 49 tweets
+20,981.0215,0.6304,2026-04-26 22:39:58,1: 31 tweets; 2: 87 tweets; 3: 115 tweets; 4: 50 tweets; 5: 60 tweets; 6: 17 tweets; 7: 50 tweets; 8: 85 tweets; 9: 195 tweets; 10: 176 tweets; 11: 37 tweets; 12: 72 tweets; 13: 23 tweets; 14: 90 tweets; 15: 44 tweets; 16: 8 tweets; 17: 76 tweets; 18: 43 tweets; 19: 43 tweets; 20: 28 tweets
+25,968.0002,0.5581,2026-04-26 22:39:58,1: 28 tweets; 2: 66 tweets; 3: 76 tweets; 4: 48 tweets; 5: 56 tweets; 6: 14 tweets; 7: 52 tweets; 8: 65 tweets; 9: 176 tweets; 10: 152 tweets; 11: 27 tweets; 12: 70 tweets; 13: 23 tweets; 14: 79 tweets; 15: 44 tweets; 16: 8 tweets; 17: 69 tweets; 18: 36 tweets; 19: 42 tweets; 20: 26 tweets; 21: 64 tweets; 22: 17 tweets; 23: 25 tweets; 24: 44 tweets; 25: 23 tweets
