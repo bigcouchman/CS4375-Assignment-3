@@ -6,37 +6,42 @@
 ## Requirements
 
 - Python 3.8+
-- No third-party libraries — uses the Python standard library
+- `requests`
+- `pandas`
 
 ## Dataset
 
-Download from UCI:
-https://archive.ics.uci.edu/ml/datasets/Health+News+in+Twitter
-
-Go to the link and download the datafile. Then unzip the file and add to the part 2 
-folder. Afterwards pick a .txt to run the model. 
-
-Note the dataset is already in Part2 for you, the TA
+The script fetches tweets online from UCI dataset `438`:
+https://archive.ics.uci.edu/static/public/438/health+news+in+twitter.zip
 
 ## How to Run
+
+```
+.\.venv\Scripts\Activate
+```
 
 ``` bash
 cd Part2
 ```
 
 ```bash
-python kmeans_tweets.py Health-Tweets/bbchealth.txt
+pip install requests pandas
 ```
 
-Or use the default path (runs bbchealth.txt):
-
+runs bbchealth.txt by default 
 ```bash
 python kmeans_tweets.py
 ```
 
+can pass a .txt file as well 
+
+```bash
+python kmeans_tweets.py bbchealth.txt
+```
+
 ## Output
 
-The commands prints a results table in the termnial and saves a copy to `/results/runX.csv`
+The commands prints a results table in the terminal and saves a copy to `/results/run#_datasetname.csv`
 
 EX:
 
