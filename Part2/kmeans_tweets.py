@@ -87,11 +87,11 @@ def _load_full_dataframe_from_dataset_438():
                     dfs.append(df)
 
             if not dfs:
-                raise ValueError('No .txt files were found in dataset 438 archive.')
+                raise ValueError('No .txt files were found.')
 
             return pd.concat(dfs, ignore_index=True)
     except zipfile.BadZipFile as exc:
-        raise ValueError('Downloaded dataset 438 archive is not a valid zip file.') from exc
+        raise ValueError('Error processing downloaded zipfile.') from exc
 
 
 def _select_source_dataframe(full_df, member_path):
@@ -106,13 +106,13 @@ def _select_source_dataframe(full_df, member_path):
         available = sorted(sources.unique())
         sample = ', '.join(available[:6])
         raise FileNotFoundError(
-            f'{member_path} was not found in dataset 438. Example files: {sample}'
+            f'{member_path} was not found.'
         )
     return selected
 
 
 def load_tweets_from_dataset_438(tweet_file=DEFAULT_TWEET_FILE):
-    """Load and preprocess tweets from a specific .txt in UCI dataset 438."""
+    """Load and preprocess tweets from a specific .txt."""
     member_path = _normalize_member_path(tweet_file)
     full_df = _load_full_dataframe_from_dataset_438()
     source_df = _select_source_dataframe(full_df, member_path)
